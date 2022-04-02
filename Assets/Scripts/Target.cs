@@ -15,6 +15,8 @@ public class Target : MonoBehaviour
     SpriteRenderer _sr;
     Manager _manager;
 
+    bool drag = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +29,20 @@ public class Target : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (_manager.Connected())
+        {
+            if (mouseHover && Input.GetMouseButtonDown(1)) drag = true;
+            if (drag)
+            {
+                Vector2 new_pos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                new_pos.x = Mathf.Clamp(new_pos.x, -5.25f, 5.25f);
+                new_pos.y = Mathf.Clamp(new_pos.y, -4.05f, 4.05f);
+                transform.position = new_pos;
+                
+                if (Input.GetMouseButtonUp(1)) drag = false;
+            }
+        }
+
     }
 
 
@@ -45,38 +60,33 @@ public class Target : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        Debug.Log("Mouse Enter");
         mouseHover = true;
         EntityEnter();
     }
 
     private void OnMouseExit()
     {
-        Debug.Log("Mouse Exit");
         mouseHover = false;
         EntityExit();
     }
 
     private void OnMouseDown()
     {
-        Debug.Log("Mouse Down");
         mouseDown = true;
         _sr.color = downColor;
     }
 
     private void OnMouseUp()
     {
-        Debug.Log("Mouse Up");
         mouseDown = false;
 
-        if (mouseHover) _manager.SwitchConnect();
+        if (mouseHover) _manager.SwitchConnect(true);
 
         _sr.color = hover > 0 ? hoverColor : normalColor;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Trigger!");
         EntityEnter();
     }
 

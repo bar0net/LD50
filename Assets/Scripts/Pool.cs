@@ -22,7 +22,6 @@ public class Pool : MonoBehaviour
 
         entity.SetActive(true);
 
-        Debug.Log("Stack count: " + stack.Count.ToString());
         return entity;
     }
 
@@ -30,6 +29,5 @@ public class Pool : MonoBehaviour
     {
         entity.SetActive(false);
         stack.Push(entity);
-        Debug.Log("Stack count: " + stack.Count.ToString());
     }
 }
