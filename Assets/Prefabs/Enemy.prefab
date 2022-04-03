@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a936de1551034041aed1e6afca3dccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pool: {fileID: 0}
+  lifespan: 0
   initialHealth: 3
   uiHealth: {fileID: 8757384944266308922}
   health: 3

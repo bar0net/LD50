@@ -2,32 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnerLane : MonoBehaviour
+public class SpawnerLane : Spawner
 {
-    public GameObject[] lanes;
-    const float maxTime = 10.0f;
+    public GameObject[] spawners;
+    int   index = 0;
 
-    float timer = 0;
-
-    private void Update()
+    protected override void OnEnable()
     {
-        timer -= Time.deltaTime;
-
-        if (timer < 0) gameObject.SetActive(false);
+        foreach (GameObject spawner in spawners) spawner.SetActive(false);
+        index = Random.Range(0, spawners.Length);
     }
 
-    private void OnEnable()
+    protected override void Spawn()
     {
-        int rng = Random.Range(0, lanes.Length);
-        for (int i = 0; i < lanes.Length; ++i)
-        {
-            lanes[i].SetActive(i != rng);
-        }
-        timer = maxTime;
-    }
+        spawners[index].SetActive(false);
+        spawners[index].SetActive(true);
 
-    private void OnDisable()
-    {
-        foreach (GameObject lane in lanes) lane.SetActive(false);
+        int next_index = (index + Random.Range(1, spawners.Length)) % spawners.Length;
+
+        index = next_index;
     }
 }
