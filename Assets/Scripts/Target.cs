@@ -95,4 +95,8 @@ public class Target : MonoBehaviour
         EntityExit();
     }
 
+    public void Drop()
+    {
+        drag = false;
+    }
 }

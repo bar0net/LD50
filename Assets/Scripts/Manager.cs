@@ -13,8 +13,8 @@ public class Manager : MonoBehaviour
         public GameObject entity;
         public string commentFirst;
         public string[] commentOther;
+        public float time;
     }
-
 
     [Header("UI")]
     public Text uiConnectionStatus;
@@ -33,7 +33,8 @@ public class Manager : MonoBehaviour
     public Color inactiveDown;
 
     [Header("Challenges")]
-    public Challenge[] challenges;
+    public Challenge[] tutorialChallenges;
+    public Challenge[] randomChallenges;
 
 
     bool connected = false;
@@ -41,6 +42,15 @@ public class Manager : MonoBehaviour
 
     float startTime = 0;
     int recordTime = 0;
+    float challengeTime = 0;
+
+    int tutorialIndex = 0;
+    int randomIndex = 0;
+
+    private void Awake()
+    {
+        PlayerPrefs.DeleteAll();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -61,6 +71,7 @@ public class Manager : MonoBehaviour
         else uiComms.Write("Go on... press the red button again... I don't know why I even try...");
 
         PlayerPrefs.SetInt("first_time", count + 1);
+        PlayerPrefs.GetInt("tutorial", -1);
     }
 
     // Update is called once per frame
@@ -69,6 +80,13 @@ public class Manager : MonoBehaviour
         if (connected)
         {
             uiTimeText.text = Mathf.FloorToInt(Time.time - startTime).ToString();
+
+            challengeTime -= Time.deltaTime;
+            if (challengeTime < 0)
+            {
+                if (tutorialIndex > -2) StartNextTutorial();
+                else StartRandomChallenge();
+            }
         }
     }
 
@@ -86,23 +104,71 @@ public class Manager : MonoBehaviour
         target.hoverColor  = activeHover;
         target.downColor   = activeDown;
 
-        SetChallenge(0);
+        if (tutorialIndex > -2) StartNextTutorial();
+        else StartRandomChallenge();
 
         startTime = Time.time;
         PaintUI();
     }
 
+    void StartNextTutorial()
+    {
+        if (tutorialIndex >= 0) tutorialChallenges[tutorialIndex].entity.SetActive(false);
+        tutorialIndex++;
+
+        bool found = false;
+        for (; tutorialIndex < tutorialChallenges.Length; ++tutorialIndex)
+        {
+            Challenge c = tutorialChallenges[tutorialIndex];
+            if (!c.enabled) continue;
+
+            found = true;
+            c.entity.SetActive(true);
+            DisplayChallengeComms(c);
+            challengeTime = c.time;
+            break;
+        }
+
+        if (!found)
+        {
+            tutorialIndex = -2;
+            PlayerPrefs.SetInt("tutorial", -2);
+            StartRandomChallenge();
+        }
+
+    }
+
+    void StartRandomChallenge()
+    {
+
+    }
+
+    void DisplayChallengeComms(Challenge c)
+    {
+        if (PlayerPrefs.GetInt("first_" + c.Name, 0) == 0)
+        {
+            PlayerPrefs.SetInt("first_" + c.Name, 0);
+            uiComms.Write(c.commentFirst);
+        }
+        else uiComms.Write(c.commentOther[Random.Range(0, c.commentOther.Length)]);
+    }
+
     private void Disconnect(bool userAction = false)
     {
+        // Update Tutorial Index
+        if (tutorialIndex > -2) tutorialIndex = -1;
+
+        // Target Management
         target.normalColor = inactiveNormal;
         target.hoverColor  = inactiveHover;
         target.downColor   = inactiveDown;
+        target.Drop();
 
-        foreach (PoolObject p in FindObjectsOfType<PoolObject>())
-            p.pool.DeSpawn(p.gameObject);
-        SetChallenge(-1);
+        // Stop Active spawners and Despawn Pooled Objects
+        foreach (PoolObject p in FindObjectsOfType<PoolObject>()) p.pool.DeSpawn(p.gameObject);
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("Spawner")) go.SetActive(false);
 
-        // Time
+        // Update Record Time
         int currTime = Mathf.FloorToInt(Time.time - startTime);
         if (currTime > recordTime)
         {
@@ -111,6 +177,7 @@ public class Manager : MonoBehaviour
         }
         PaintUI();
 
+        // Give feedback via comms
         if (userAction)
         {
             int rng = Random.Range(0, 5);
@@ -131,9 +198,9 @@ public class Manager : MonoBehaviour
         }
     }
 
-    void SetChallenge(int index)
+    /*void SetChallenge(int index)
     {
-        foreach (Challenge c in challenges)
+        foreach (Challenge c in randomChallenges)
         {
             if (index == 0)
             {
@@ -151,7 +218,7 @@ public class Manager : MonoBehaviour
             }
             index--;
         }
-    }
+    }*/
 
     void PaintUI()
     {
