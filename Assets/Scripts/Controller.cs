@@ -13,7 +13,7 @@ public class Controller : MonoBehaviour
     float timer = 1.0f;
     bool overlap = false;
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         timer = stopAfter;
     }

@@ -28,7 +28,7 @@ public class Character : PoolObject
 
     void ResetValues()
     {
-        SetHealth(initialHealth, initialHealth);
+        SetHealth(initialHealth + Globals.hpExtra, initialHealth + Globals.hpExtra);
     }
 
     void Die()

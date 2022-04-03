@@ -5,15 +5,17 @@ using UnityEngine;
 public class SpawnerPylon : Spawner
 {
     public Transform uiTimeBar;
+    public AudioSource source;
 
     private void LateUpdate()
     {
-        float ratio = 1 - Mathf.Clamp01(timer / delay.x);
+        float ratio = 1 - Mathf.Clamp01(timer * Globals.timeDifficulty / delay.x);
         uiTimeBar.localScale = new Vector3(1.0f, ratio, 1.0f);
     }
 
     protected override void Spawn()
     {
+        if (Globals.sfxActive) source.Play();
         for (int i = 0; i < 8; i++)
         {
             GameObject go = pool.Spawn();

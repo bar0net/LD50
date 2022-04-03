@@ -5,11 +5,14 @@ using UnityEngine;
 public class ControllerBasic : Controller
 {
     GameObject target = null;
+    Manager _manager;
+    
 
-    override protected void Start()
+    override protected void OnEnable()
     {
-        base.Start();
-        target = GameObject.FindGameObjectWithTag("Target");
+        base.OnEnable();
+        _manager = FindObjectOfType<Manager>();
+        target = _manager.GetTarget().gameObject;
     }
 
     override protected void Move() 

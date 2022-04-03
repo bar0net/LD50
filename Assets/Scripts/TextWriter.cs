@@ -7,6 +7,8 @@ public class TextWriter : MonoBehaviour
 {
     public float delay = 0.1f;
     const string initial_space = "            ";
+    public Animator anim;
+    public AudioSource _as;
 
     string text = "";
     int index = 0;
@@ -22,6 +24,7 @@ public class TextWriter : MonoBehaviour
 
     private void Update()
     {
+        anim.SetBool("talking", index < text.Length);
 
         if (index < text.Length)
         {
@@ -33,12 +36,17 @@ public class TextWriter : MonoBehaviour
                 _ui.text = initial_space + text.Substring(0, index);
                 timer = delay;
             }
+
+            if (_as.isPlaying && !Globals.sfxActive) _as.Stop();
+            if (index == text.Length) _as.Stop();
         }
+
     }
 
     public void Write(string value)
     {
         text = value;
         index = 0;
+        if (Globals.sfxActive) _as.Play();
     }
 }

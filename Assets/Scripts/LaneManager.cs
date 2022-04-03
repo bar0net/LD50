@@ -18,10 +18,24 @@ public class LaneManager : MonoBehaviour
 
     private void OnEnable()
     {
-        int rng = Random.Range(0, lanes.Length);
-        for (int i = 0; i < lanes.Length; ++i)
+        int hideAmount =  Mathf.FloorToInt(Globals.sizeDifficulty);
+        if (4.0f <= Globals.sizeDifficulty && Globals.sizeDifficulty < 4.5f) hideAmount = 3;
+        else if (4.5f <= Globals.sizeDifficulty && Globals.sizeDifficulty < 6.0f) hideAmount = 4;
+        else if (Globals.sizeDifficulty >= 6.0f) hideAmount = 5;
+
+        int rng = Random.Range(0, lanes.Length-hideAmount);
+
+        for (int i = 0; i < rng; ++i)
         {
-            lanes[i].SetActive(i != rng);
+            lanes[i].SetActive(true);
+        }
+        for (int i = rng; i < rng + hideAmount; ++i)
+        {
+            lanes[i].SetActive(false);
+        }
+        for (int i = rng + hideAmount; i < lanes.Length; ++i)
+        {
+            lanes[i].SetActive(true);
         }
         timer = maxTime;
     }

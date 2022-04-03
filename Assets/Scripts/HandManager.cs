@@ -9,10 +9,13 @@ public class HandManager : MonoBehaviour
     public float radius = 1.3f;
     public GameObject shadow;
     public GameObject hand;
+    public GameObject activeFlag;
 
     public float handSpeed = 5.0f;
     public float handDelay = 2.0f;
     public float pressDelay = 0.7f;
+
+    public AudioSource source;
 
     States state = States.SHADOW;
 
@@ -70,6 +73,7 @@ public class HandManager : MonoBehaviour
                     {
                         _col.enabled = true;
                         _sr.color = Color.white;
+                        if (Globals.sfxActive) source.Play();
 
                         hand.transform.position = shadow.transform.position;
                         state = States.HAND_PRESS;
@@ -93,7 +97,11 @@ public class HandManager : MonoBehaviour
                     Vector2 dir = (_SPAWN_POINT_ - (Vector2)hand.transform.position);
                     float dst = Time.deltaTime * handSpeed * Globals.timeDifficulty;
 
-                    if (dir.magnitude < dst) state = States.SHADOW;
+                    if (dir.magnitude < dst)
+                    {
+                        if (!activeFlag.activeSelf) this.gameObject.SetActive(false);
+                        state = States.SHADOW;
+                    }
                     else hand.transform.Translate(dir.normalized * dst);
                 }
                 break;

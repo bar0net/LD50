@@ -45,6 +45,15 @@ public class Target : MonoBehaviour
 
     }
 
+    public void SetColors(Color normal, Color hover, Color down)
+    {
+        normalColor = normal;
+        hoverColor = hover;
+        downColor = down;
+
+        if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+        _sr.color = normalColor;
+    }
 
     void EntityEnter()
     {
@@ -98,5 +107,11 @@ public class Target : MonoBehaviour
     public void Drop()
     {
         drag = false;
+    }
+
+    public void SetPosition(Vector2 position)
+    {
+        drag = false;
+        this.transform.position = position;
     }
 }
