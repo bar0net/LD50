@@ -149,6 +149,7 @@ public class Manager : MonoBehaviour
         startTime = Time.time;
         PaintUI();
         _as.clip = musicConnected;
+        _as.Play();
         easierMode.interactable = false;
     }
 
@@ -277,6 +278,7 @@ public class Manager : MonoBehaviour
         extraTargets.Clear();
 
         _as.clip = musicDisconnected;
+        _as.Play();
         easierMode.interactable = true;
     }
     
